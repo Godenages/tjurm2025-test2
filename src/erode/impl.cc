@@ -47,5 +47,57 @@ std::vector<cv::Mat> erode(const cv::Mat& src_erode, const cv::Mat& src_dilate) 
 
     // TODO: 在这里实现你的代码
 
+    //灰度图像
+    cv::Mat grayimage_ero,grayimage_dil;
+    cv::cvtColor(src_erode, grayimage_ero, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(src_dilate, grayimage_dil, cv::COLOR_BGR2GRAY);
+
+    //二值图像
+    cv::Mat binaryimage_dil,binaryimage_ero;
+    double yuzhi = 50; // 设置阈值
+    double maxVal = 255;    // 设置最大值
+    int type = cv::THRESH_BINARY; // 设置阈值类型
+    cv::threshold(grayimage_ero, binaryimage_ero, yuzhi, maxVal, type);
+    cv::threshold(grayimage_dil, binaryimage_dil, yuzhi, maxVal, type);
+
+    //腐蚀
+    //  void cv::erode(
+    //  *          InputArray  src,        // 输入的二值图像
+    //  *          OutputArray dst,        // 输出的二值图像
+    //  *          InputArray  kernel,     // 腐蚀的核
+    //  *          Point       anchor = Point(-1,-1), // 锚点
+    //  *          int         iterations = 1,        // 迭代次数
+    //  *          int         borderType = BORDER_CONSTANT, // 边界类型
+    //  *          const Scalar& borderValue = morphologyDefaultBorderValue() // 边界值
+    //  *      )
+
+    //创建核
+    cv::Point anchor(-1,-1);
+    cv::Mat he = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3) ,anchor);
+    // 图像的腐蚀和膨胀的核可以使用 cv::getStructuringElement 函数生成，参数如下
+    //  *      cv::Mat cv::getStructuringElement(
+    //  *          int         shape,      // 核的形状 (具体类型可以参考网络资料，或者利用 vscode 的代码提示)
+    //  *          Size        ksize,      // 核的大小
+    //  *          Point       anchor = Point(-1,-1) // 锚点
+    //  *      )
+    //  *       膨胀腐蚀操作的本质是对图像进行卷积(暂时可以理解为在一个像素区域内取平均的意思)操作，
+    //  *      核的大小决定了这个区域的大小
+
+    cv::erode(binaryimage_ero,dst_erode,he,anchor,3,CV_HAL_BORDER_CONSTANT);
+    
+
+    // void cv::dilate(
+    //  *          InputArray  src,        // 输入的二值图像
+    //  *          OutputArray dst,        // 输出的二值图像
+    //  *          InputArray  kernel,     // 膨胀的核
+    //  *          Point       anchor = Point(-1,-1), // 锚点
+    //  *          int         iterations = 1,        // 迭代次数
+    //  *          int         borderType = BORDER_CONSTANT, // 边界类型
+    //  *          const Scalar& borderValue = morphologyDefaultBorderValue() // 边界值
+    //  *      )
+
+    cv::dilate(binaryimage_dil,dst_dilate,he,anchor,2,CV_HAL_BORDER_CONSTANT,255);
+
+
     return {dst_erode, dst_dilate};
 }

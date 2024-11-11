@@ -17,7 +17,42 @@ std::vector<std::vector<cv::Point>> find_contours(const cv::Mat& input) {
      * 运行测试点，你找到的轮廓与答案的轮廓一样就行。
      */
     
-    std::vector<std::vector<cv::Point>> res;
+
+
     // IMPLEMENT YOUR CODE HERE
-    return res;
+
+    //cv::imshow("input",input);
+
+
+    //创建一个点集，用于存放找到的轮廓
+    std::vector<std::vector<cv::Point>> res;
+
+    //灰度
+    cv::Mat gray;
+    cv::cvtColor(input, gray, cv::COLOR_BGR2GRAY);
+
+    //二值
+    cv::Mat binary;
+    double yuzhi = 50; // 设置阈值
+    double maxVal = 255;    // 设置最大值
+    int type = cv::THRESH_BINARY; // 设置阈值类型
+    cv::threshold(gray, binary, yuzhi, maxVal, type);
+
+    //轮廓
+    cv::findContours(binary, res, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
+
+    //cv::imshow("counters",res);
+
+    cv::Mat contourImage;
+    cv::cvtColor(input, contourImage, cv::COLOR_BGR2RGB);
+    cv::drawContours(contourImage, res, 1, cv::Scalar(0, 255, 0),2);
+    cv::imshow("Contours", contourImage);
+    cv::waitKey(0);
+
+    std::vector<std::vector<cv::Point>> ans;
+    ans.push_back(res[0]);
+    ans.push_back(res[1]);
+    ans.push_back(res[2]);
+
+    return ans;
 }
